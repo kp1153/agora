@@ -24,3 +24,22 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* नैवबार कस्टम स्क्रॉलबार */
+.menu-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+
+.menu-scroll::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.menu-scroll::-webkit-scrollbar-thumb {
+  background: #14b8a6;
+  border-radius: 10px;
+}
+
+.menu-scroll::-webkit-scrollbar-thumb:hover {
+  background: #0d9488;
+}
