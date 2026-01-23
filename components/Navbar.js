@@ -15,7 +15,7 @@ export default function Navbar() {
     { name: 'कविता', href: '/books?category=कविता' },
     { name: 'उपन्यास', href: '/books?category=उपन्यास' },
     { name: 'कहानी संग्रह', href: '/books?category=कहानी संग्रह' },
-    { name: 'किताब छपवाएं', href: '/publish-with-us' },
+    { name: 'हमारे साथ प्रकाशित करें', href: '/publish-with-us' },
     { name: 'ब्लॉग', href: '/blog' },
     { name: 'संपर्क करें', href: '/contact' },
   ];
@@ -64,37 +64,39 @@ export default function Navbar() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4">
-  <div className="hidden md:flex justify-center py-2 overflow-x-auto menu-scroll bg-blue-700 -mx-4 px-4">
-          <div className="flex flex-nowrap gap-2">
-            {menuItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-              className="whitespace-nowrap px-4 py-2 text-white hover:bg-blue-600 rounded-lg transition-colors"
-              >
-                {item.name}
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {isMenuOpen && (
-       <div className="md:hidden pb-4 bg-blue-700 -mx-4 px-4">
-            <div className="grid grid-cols-2 gap-2">
+      <div className="bg-blue-700 w-full py-2">
+        <div className="container mx-auto px-4">
+          <div className="hidden md:flex justify-center overflow-x-auto menu-scroll">
+            <div className="flex flex-nowrap gap-2">
               {menuItems.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
-                  onClick={() => setIsMenuOpen(false)}
-                 className="px-4 py-2 text-white hover:bg-blue-600 rounded-lg transition-colors text-center"
+                  className="whitespace-nowrap px-4 py-2 text-white hover:bg-blue-600 rounded-lg transition-colors"
                 >
                   {item.name}
                 </Link>
               ))}
             </div>
           </div>
-        )}
+
+          {isMenuOpen && (
+            <div className="md:hidden pb-4">
+              <div className="grid grid-cols-2 gap-2">
+                {menuItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setIsMenuOpen(false)}
+                    className="px-4 py-2 text-white hover:bg-blue-600 rounded-lg transition-colors text-center"
+                  >
+                    {item.name}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </nav>
   );
