@@ -1,19 +1,20 @@
-// components/Navbar.js
 'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useCart } from '@/context/CartContext';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { totalItems } = useCart();
 
   const menuItems = [
     { name: 'होम', href: '/' },
     { name: 'सभी पुस्तकें', href: '/books' },
-    { name: 'साहित्य', href: '/books/sahitya' },
-    { name: 'कविता', href: '/books/kavita' },
-    { name: 'उपन्यास', href: '/books/upanyas' },
-    { name: 'कहानी संग्रह', href: '/books/kahani' },
+    { name: 'साहित्य', href: '/books?category=साहित्य' },
+    { name: 'कविता', href: '/books?category=कविता' },
+    { name: 'उपन्यास', href: '/books?category=उपन्यास' },
+    { name: 'कहानी संग्रह', href: '/books?category=कहानी संग्रह' },
     { name: 'हमारे साथ प्रकाशित करें', href: '/publish-with-us' },
     { name: 'ब्लॉग', href: '/blog' },
     { name: 'संपर्क करें', href: '/contact' },
@@ -47,9 +48,11 @@ export default function Navbar() {
             </button>
             <Link href="/cart" className="relative text-gray-700 hover:text-teal-600">
               🛒
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                0
-              </span>
+              {totalItems > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {totalItems}
+                </span>
+              )}
             </Link>
             <Link href="/auth/login" className="text-gray-700 hover:text-teal-600">
               👤
