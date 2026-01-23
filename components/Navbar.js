@@ -15,7 +15,7 @@ export default function Navbar() {
     { name: 'कविता', href: '/books?category=कविता' },
     { name: 'उपन्यास', href: '/books?category=उपन्यास' },
     { name: 'कहानी संग्रह', href: '/books?category=कहानी संग्रह' },
-    { name: 'हमारे साथ प्रकाशित करें', href: '/publish-with-us' },
+ { name: 'किताब छपवाएं', href: '/publish-with-us' },
     { name: 'ब्लॉग', href: '/blog' },
     { name: 'संपर्क करें', href: '/contact' },
   ];
