@@ -65,13 +65,13 @@ const Navbar = () => {
   const isActive = (href) => pathname === href;
 
   return (
-    <nav className="bg-blue-700 shadow-md sticky top-0 z-50">
-      <style dangerouslySetInnerHTML={{__html: `
-        .menu-scroll::-webkit-scrollbar { height: 8px; }
-        .menu-scroll::-webkit-scrollbar-track { background: #1d4ed8; }
-        .menu-scroll::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 6px; }
-        .menu-scroll::-webkit-scrollbar-thumb:hover { background: #60a5fa; }
-      `}} />
+    <nav className="bg-rose-500 border-b-2 border-rose-700 shadow-md sticky top-0 z-50">
+   <style dangerouslySetInnerHTML={{__html: `
+  .menu-scroll::-webkit-scrollbar { height: 8px; }
+  .menu-scroll::-webkit-scrollbar-track { background: #e11d48; }
+  .menu-scroll::-webkit-scrollbar-thumb { background: #fb7185; border-radius: 6px; }
+  .menu-scroll::-webkit-scrollbar-thumb:hover { background: #fda4af; }
+`}} />
       
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center pt-6 pb-2">
@@ -101,7 +101,7 @@ const Navbar = () => {
               </Link>
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="p-2 rounded-md text-white hover:bg-blue-600 md:hidden"
+                className="p-2 rounded-md text-white hover:bg-rose-600 md:hidden"
               >
                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path
@@ -127,8 +127,8 @@ const Navbar = () => {
                   className={`
                     text-white text-center font-medium rounded-md whitespace-nowrap min-w-[120px]
                     px-3 py-2 text-sm
-                    hover:bg-blue-600
-                    ${isActive(item.href) ? "bg-blue-600 ring-1 ring-white" : ""}
+                    hover:bg-rose-600
+                    ${isActive(item.href) ? "bg-rose-600 ring-1 ring-white" : ""}
                   `}
                 >
                   {item.name}
@@ -140,8 +140,8 @@ const Navbar = () => {
                   className={`
                     text-white text-center font-medium rounded-md whitespace-nowrap min-w-[120px]
                     px-3 py-2 text-sm
-                    hover:bg-blue-600
-                    ${activeSection === item.id ? "bg-blue-600 ring-1 ring-yellow-400" : ""}
+                    hover:bg-rose-600
+                    ${activeSection === item.id ? "bg-rose-600 ring-1 ring-yellow-400" : ""}
                   `}
                 >
                   {item.name}
@@ -159,7 +159,7 @@ const Navbar = () => {
                       key={item.name}
                       href={item.href}
                       onClick={() => setIsMenuOpen(false)}
-                      className="px-4 py-2 text-white hover:bg-blue-600 rounded-lg transition-colors text-center"
+                      className="px-4 py-2 text-white hover:bg-rose-600 rounded-lg transition-colors text-center"
                     >
                       {item.name}
                     </Link>
@@ -167,7 +167,7 @@ const Navbar = () => {
                     <button
                       key={item.name}
                       onClick={() => scrollToSection(item.id)}
-                      className="px-4 py-2 text-white hover:bg-blue-600 rounded-lg transition-colors text-center"
+                      className="px-4 py-2 text-white hover:bg-rose-600 rounded-lg transition-colors text-center"
                     >
                       {item.name}
                     </button>

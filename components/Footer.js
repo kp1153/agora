@@ -5,7 +5,7 @@ import { FaFacebook, FaInstagram, FaTwitter, FaPhone, FaEnvelope } from "react-i
 
 export default function Footer() {
   return (
-    <footer className="w-full border-t-2 border-blue-800 mt-16 bg-blue-700">
+    <footer className="w-full border-t-2 border-rose-600 mt-16 bg-rose-500">
       <div className="max-w-6xl mx-auto px-4 py-10 text-center text-white">
         <div className="flex flex-col md:flex-row justify-center items-center gap-4 text-sm">
           <div className="flex items-center gap-2">
@@ -20,13 +20,13 @@ export default function Footer() {
 
         <div className="flex justify-center gap-6 mt-6 text-2xl text-white">
           <a href="https://www.facebook.com/agoraprakashan12" target="_blank" rel="noopener noreferrer">
-            <FaFacebook className="hover:text-gray-300 cursor-pointer" />
+            <FaFacebook className="hover:text-gray-200 cursor-pointer transition-colors" />
           </a>
           <a href="https://www.instagram.com/agoraprakashan" target="_blank" rel="noopener noreferrer">
-            <FaInstagram className="hover:text-gray-300 cursor-pointer" />
+            <FaInstagram className="hover:text-gray-200 cursor-pointer transition-colors" />
           </a>
           <a href="https://twitter.com/AgoraPrakashan" target="_blank" rel="noopener noreferrer">
-            <FaTwitter className="hover:text-gray-300 cursor-pointer" />
+            <FaTwitter className="hover:text-gray-200 cursor-pointer transition-colors" />
           </a>
         </div>
 
@@ -36,7 +36,7 @@ export default function Footer() {
             href="https://www.web-developer-kp.com/"
             target="_blank"
             rel="noopener noreferrer"
-            className="underline hover:text-gray-300"
+            className="underline hover:text-gray-200 transition-colors"
           >
             www.web-developer-kp.com
           </a>
