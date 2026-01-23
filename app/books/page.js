@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
-export default function BooksPage() {
+function BooksContent() {
   const searchParams = useSearchParams();
   const [books, setBooks] = useState([]);
   const [filteredBooks, setFilteredBooks] = useState([]);
@@ -42,12 +42,10 @@ export default function BooksPage() {
   function filterAndSortBooks() {
     let result = [...books];
 
-    // Category filter
     if (selectedCategory !== 'all') {
       result = result.filter(book => book.category === selectedCategory);
     }
 
-    // Search filter
     if (searchQuery.trim()) {
       result = result.filter(book => 
         book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -55,7 +53,6 @@ export default function BooksPage() {
       );
     }
 
-    // Sort
     switch (sortBy) {
       case 'price-low':
         result.sort((a, b) => a.price - b.price);
@@ -89,17 +86,14 @@ export default function BooksPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
-        {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-4">सभी पुस्तकें</h1>
           <p className="text-gray-600">कुल {filteredBooks.length} पुस्तकें मिलीं</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Sidebar Filters */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
-              {/* Search */}
               <div className="mb-6">
                 <label className="block text-gray-700 font-semibold mb-2">खोजें</label>
                 <input
@@ -111,7 +105,6 @@ export default function BooksPage() {
                 />
               </div>
 
-              {/* Category Filter */}
               <div className="mb-6">
                 <label className="block text-gray-700 font-semibold mb-3">श्रेणी</label>
                 <div className="space-y-2">
@@ -141,7 +134,6 @@ export default function BooksPage() {
                 </div>
               </div>
 
-              {/* Sort */}
               <div>
                 <label className="block text-gray-700 font-semibold mb-2">क्रमबद्ध करें</label>
                 <select
@@ -156,7 +148,6 @@ export default function BooksPage() {
                 </select>
               </div>
 
-              {/* Clear Filters */}
               {(selectedCategory !== 'all' || searchQuery) && (
                 <button
                   onClick={() => {
@@ -171,7 +162,6 @@ export default function BooksPage() {
             </div>
           </div>
 
-          {/* Books Grid */}
           <div className="lg:col-span-3">
             {filteredBooks.length === 0 ? (
               <div className="bg-white rounded-lg shadow-md p-12 text-center">
@@ -217,5 +207,20 @@ export default function BooksPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function BooksPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-6xl mb-4">📚</div>
+          <p className="text-xl text-gray-600">लोड हो रहा है...</p>
+        </div>
+      </div>
+    }>
+      <BooksContent />
+    </Suspense>
   );
 }
