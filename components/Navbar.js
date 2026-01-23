@@ -1,37 +1,90 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useCart } from '@/context/CartContext';
 
-export default function Navbar() {
+const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("");
+  const pathname = usePathname();
   const { totalItems } = useCart();
 
-  const menuItems = [
+  const navItems = [
     { name: 'होम', href: '/' },
     { name: 'सभी पुस्तकें', href: '/books' },
     { name: 'साहित्य', href: '/books?category=साहित्य' },
     { name: 'कविता', href: '/books?category=कविता' },
     { name: 'उपन्यास', href: '/books?category=उपन्यास' },
     { name: 'कहानी संग्रह', href: '/books?category=कहानी संग्रह' },
- { name: 'किताब छपवाएं', href: '/publish-with-us' },
+    { name: 'किताब छपवाएं', href: '/publish-with-us' },
     { name: 'ब्लॉग', href: '/blog' },
     { name: 'संपर्क करें', href: '/contact' },
   ];
 
+  const scrollToSection = (id) => {
+    const element = document.getElementById(id);
+    if (!element) return;
+
+    const yOffset = -80;
+    const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+
+    window.scrollTo({ top: y, behavior: "smooth" });
+    setIsMenuOpen(false);
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = navItems
+        .filter((item) => item.id)
+        .map((item) => ({
+          id: item.id,
+          element: document.getElementById(item.id),
+        }));
+
+      const scrollPosition = window.scrollY + 150;
+
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const section = sections[i];
+        if (section.element && section.element.offsetTop <= scrollPosition) {
+          setActiveSection(section.id);
+          break;
+        }
+      }
+    };
+
+    if (pathname === "/") {
+      window.addEventListener("scroll", handleScroll);
+      handleScroll();
+    }
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [pathname]);
+
+  const isActive = (href) => pathname === href;
+
   return (
-    <nav className="bg-white shadow-md sticky top-0 z-50">
-      <div className="bg-blue-700 w-full py-4">
-        <div className="container mx-auto px-4">
+    <nav className="bg-blue-700 shadow-md sticky top-0 z-50">
+      <style dangerouslySetInnerHTML={{__html: `
+        .menu-scroll::-webkit-scrollbar { height: 8px; }
+        .menu-scroll::-webkit-scrollbar-track { background: #1d4ed8; }
+        .menu-scroll::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 6px; }
+        .menu-scroll::-webkit-scrollbar-thumb:hover { background: #60a5fa; }
+      `}} />
+      
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="text-center pt-6 pb-2">
           <div className="flex items-center justify-between">
+            <div className="flex-1"></div>
+            
             <Link href="/" className="flex-1 text-center">
-              <span className="text-4xl font-extrabold text-white" style={{ fontFamily: "'Noto Sans Devanagari', sans-serif" }}>
+              <h1 className="text-4xl font-extrabold text-white" style={{ fontFamily: "'Noto Sans Devanagari', sans-serif" }}>
                 अगोरा प्रकाशन
-              </span>
+              </h1>
             </Link>
             
-            <div className="flex items-center gap-4">
+            <div className="flex-1 flex items-center justify-end gap-4">
               <button className="text-white hover:text-gray-200">
                 🔍
               </button>
@@ -46,56 +99,87 @@ export default function Navbar() {
               <Link href="/auth/login" className="text-white hover:text-gray-200">
                 👤
               </Link>
-
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="md:hidden text-white"
+                className="p-2 rounded-md text-white hover:bg-blue-600 md:hidden"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  {isMenuOpen ? (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  ) : (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                  )}
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d={isMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"}
+                  />
                 </svg>
               </button>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="bg-blue-700 w-full py-2 px-4">
-        <div className="hidden md:flex justify-center overflow-x-auto menu-scroll">
-          <div className="flex flex-nowrap gap-2">
-            {menuItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="whitespace-nowrap px-4 py-2 text-white hover:bg-blue-600 rounded-lg transition-colors"
-              >
-                {item.name}
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {isMenuOpen && (
-          <div className="md:hidden pb-4">
-            <div className="grid grid-cols-2 gap-2">
-              {menuItems.map((item) => (
+        <div className={`pt-1 pb-2 ${isMenuOpen ? "block" : "hidden"} md:block`}>
+          <div className="hidden md:flex flex-nowrap w-full overflow-x-auto pb-2 menu-scroll gap-2">
+            {navItems.map((item) =>
+              item.href ? (
                 <Link
-                  key={item.href}
+                  key={item.name}
                   href={item.href}
                   onClick={() => setIsMenuOpen(false)}
-                  className="px-4 py-2 text-white hover:bg-blue-600 rounded-lg transition-colors text-center"
+                  className={`
+                    text-white text-center font-medium rounded-md whitespace-nowrap min-w-[120px]
+                    px-3 py-2 text-sm
+                    hover:bg-blue-600
+                    ${isActive(item.href) ? "bg-blue-600 ring-1 ring-white" : ""}
+                  `}
                 >
                   {item.name}
                 </Link>
-              ))}
-            </div>
+              ) : (
+                <button
+                  key={item.name}
+                  onClick={() => scrollToSection(item.id)}
+                  className={`
+                    text-white text-center font-medium rounded-md whitespace-nowrap min-w-[120px]
+                    px-3 py-2 text-sm
+                    hover:bg-blue-600
+                    ${activeSection === item.id ? "bg-blue-600 ring-1 ring-yellow-400" : ""}
+                  `}
+                >
+                  {item.name}
+                </button>
+              )
+            )}
           </div>
-        )}
+
+          {isMenuOpen && (
+            <div className="md:hidden pb-4">
+              <div className="grid grid-cols-2 gap-2">
+                {navItems.map((item) =>
+                  item.href ? (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      onClick={() => setIsMenuOpen(false)}
+                      className="px-4 py-2 text-white hover:bg-blue-600 rounded-lg transition-colors text-center"
+                    >
+                      {item.name}
+                    </Link>
+                  ) : (
+                    <button
+                      key={item.name}
+                      onClick={() => scrollToSection(item.id)}
+                      className="px-4 py-2 text-white hover:bg-blue-600 rounded-lg transition-colors text-center"
+                    >
+                      {item.name}
+                    </button>
+                  )
+                )}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </nav>
   );
-}
+};
+
+export default Navbar;
