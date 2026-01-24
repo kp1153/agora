@@ -120,23 +120,23 @@ const Navbar = () => {
         </div>
 
     <div className={`pt-1 pb-2 ${isMenuOpen ? "block" : "hidden"} md:block`}>
-          <div className="hidden md:flex flex-nowrap w-full overflow-x-auto pb-2 menu-scroll gap-2">
-            {navItems.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                onClick={() => setIsMenuOpen(false)}
-                className={`
-                  text-white text-center font-medium rounded-md whitespace-nowrap min-w-[120px]
-                  px-3 py-2 text-sm
-                  hover:bg-[#007a99]
-                  ${isActive(item.href) ? "bg-[#007a99] ring-1 ring-white" : ""}
-                `}
-              >
-                {item.name}
-              </Link>
-            ))}
-          </div>
+          <div className="hidden md:flex flex-nowrap w-full overflow-x-auto pb-2 menu-scroll gap-1">
+  {navItems.map((item) => (
+    <Link
+      key={item.name}
+      href={item.href}
+      onClick={() => setIsMenuOpen(false)}
+      className={`
+        text-white text-center font-medium rounded-md whitespace-nowrap min-w-[100px]
+        px-2 py-1.5 text-sm
+        hover:bg-[#007a99]
+        ${isActive(item.href) ? "bg-[#007a99] ring-1 ring-white" : ""}
+      `}
+    >
+      {item.name}
+    </Link>
+  ))}
+</div>
 
           {isMenuOpen && (
             <div className="md:hidden pb-4">
