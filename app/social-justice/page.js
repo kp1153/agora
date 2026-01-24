@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
-export default function PortryPage() {
+export default function SocialJusticePage() {
   const [books, setBooks] = useState([]);
 
   useEffect(() => {

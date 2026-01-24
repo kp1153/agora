@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
-export default function PortryPage() {
+export default function AutobiographyPage() {
   const [books, setBooks] = useState([]);
 
   useEffect(() => {
