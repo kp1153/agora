@@ -5,50 +5,56 @@ import { FaFacebook, FaInstagram, FaTwitter, FaPhone, FaEnvelope, FaMapMarkerAlt
 
 export default function Footer() {
   return (
-    <footer className="w-full border-t-2 border-[#004d5c] mt-16 bg-[#006680]">
-      <div className="max-w-6xl mx-auto px-4 py-10 text-center text-white">
-        <div className="flex flex-col md:flex-row justify-center items-center gap-4 text-sm">
-          <div className="flex items-center gap-2">
-            <FaPhone className="text-white" />
-            <span>094790 60031</span>
+    <footer className="w-full border-t border-[#004d5c] bg-[#006680]">
+      <div className="max-w-6xl mx-auto px-4 py-6 text-white">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 text-sm">
+          
+          <div>
+            <h3 className="font-bold mb-3 text-base">संपर्क</h3>
+            <div className="space-y-2">
+              <div className="flex items-start gap-2">
+                <FaPhone className="mt-1 flex-shrink-0" />
+                <span>094790 60031</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <FaEnvelope className="mt-1 flex-shrink-0" />
+                <span>agoraprakashan001@gmail.com</span>
+              </div>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <FaEnvelope className="text-white" />
-            <span>agoraprakashan001@gmail.com</span>
+
+          <div className="md:col-span-2">
+            <h3 className="font-bold mb-3 text-base">पता</h3>
+            <div className="flex items-start gap-2">
+              <FaMapMarkerAlt className="mt-1 flex-shrink-0" />
+              <span>ग्राम अहिरान, पोस्ट चमाँव, शिवपुर, वाराणसी-221003, उत्तर प्रदेश, भारत</span>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <FaMapMarkerAlt className="text-white" />
-            <span>ग्राम अहिरान, पोस्ट चमाँव, शिवपुर, वाराणसी-221003, उत्तर प्रदेश, भारत</span>
+
+          <div>
+            <h3 className="font-bold mb-3 text-base">सोशल मीडिया</h3>
+            <div className="flex gap-4">
+              <a href="https://www.facebook.com/agoraprakashan12" target="_blank" rel="noopener noreferrer" className="hover:scale-110 transition-transform">
+                <FaFacebook className="text-2xl" />
+              </a>
+              <a href="https://www.instagram.com/agoraprakashan" target="_blank" rel="noopener noreferrer" className="hover:scale-110 transition-transform">
+                <FaInstagram className="text-2xl" />
+              </a>
+              <a href="https://twitter.com/AgoraPrakashan" target="_blank" rel="noopener noreferrer" className="hover:scale-110 transition-transform">
+                <FaTwitter className="text-2xl" />
+              </a>
+            </div>
           </div>
         </div>
 
-        <div className="flex justify-center gap-6 mt-6 text-2xl text-white">
-          <a href="https://www.facebook.com/agoraprakashan12" target="_blank" rel="noopener noreferrer">
-            <FaFacebook className="hover:text-gray-200 cursor-pointer transition-colors" />
-          </a>
-          <a href="https://www.instagram.com/agoraprakashan" target="_blank" rel="noopener noreferrer">
-            <FaInstagram className="hover:text-gray-200 cursor-pointer transition-colors" />
-          </a>
-          <a href="https://twitter.com/AgoraPrakashan" target="_blank" rel="noopener noreferrer">
-            <FaTwitter className="hover:text-gray-200 cursor-pointer transition-colors" />
-          </a>
+        <div className="border-t border-[#004d5c] mt-4 pt-3 text-center text-xs">
+          <p className="text-gray-200">
+            © {new Date().getFullYear()} अगोरा प्रकाशन • वेबसाइट:{" "}
+            <a href="https://www.web-developer-kp.com/" target="_blank" rel="noopener noreferrer" className="underline hover:text-white">
+              web-developer-kp.com
+            </a>
+          </p>
         </div>
-
-        <p className="text-sm mt-8">
-          मन-चित्त लगाकर वेबसाइट विकसित करने वाले:{" "}
-          <a
-            href="https://www.web-developer-kp.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline hover:text-gray-200 transition-colors"
-          >
-            www.web-developer-kp.com
-          </a>
-        </p>
-
-        <p className="mt-4 text-xs text-white">
-          © {new Date().getFullYear()} अगोरा प्रकाशन — सर्वाधिकार सुरक्षित
-        </p>
       </div>
     </footer>
   );

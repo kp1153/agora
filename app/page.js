@@ -91,7 +91,7 @@ export default function HomePage() {
       </div>
 
       {/* All Books Section - 50% */}
-      <div className="h-[50vh] bg-gray-50 p-8 overflow-y-auto">
+      <div className="h-[50vh] bg-gray-50 p-8 overflow-y-auto mb-0">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl font-bold text-gray-900 mb-6">सभी पुस्तकें</h2>
           
