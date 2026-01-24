@@ -184,7 +184,7 @@ export default function NewBookPage() {
                     onClick={() => open()}
                     className="w-full px-4 py-3 text-white bg-teal-600 hover:bg-teal-700 border-2 border-teal-600 rounded-lg font-semibold"
                   >
-                    📁 इमेज अपलोड करें
+                    📤 इमेज अपलोड करें
                   </button>
                   {formData.cover_image && (
                     <div className="mt-4">
