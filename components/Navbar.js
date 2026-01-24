@@ -21,6 +21,7 @@ const Navbar = () => {
     { name: 'शिक्षा', href: '/education' },
     { name: 'ब्लॉग', href: '/blog' },
     { name: 'सामाजिक न्याय', href: '/social-justice' },
+    { name: 'आत्मकथा', href: '/autobiography' },
     { name: 'संपर्क करें', href: '/contact' },
   ];
 
