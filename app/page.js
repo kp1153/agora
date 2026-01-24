@@ -6,7 +6,18 @@ export default function HomePage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [books, setBooks] = useState([]);
 
-  const sliderImages = Array.from({ length: 10 }, (_, i) => `/images/${i + 1}.jpg`);
+  const sliderImages = [
+  '/images/1.jpg',
+  '/images/2.jpg',
+  '/images/3.jpg',
+  '/images/4.jpg',
+  '/images/5.jpg',
+  '/images/6.jpg',
+  '/images/7.JPG',  // अगर uppercase में है
+  '/images/8.JPG',
+  '/images/9.JPG',
+  '/images/10.JPG',
+];
 
   useEffect(() => {
     const timer = setInterval(() => {
