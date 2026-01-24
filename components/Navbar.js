@@ -122,18 +122,19 @@ const Navbar = () => {
         </div>
 
     <div className={`pt-1 pb-2 ${isMenuOpen ? "block" : "hidden"} md:block`}>
-          <div className="hidden md:flex flex-nowrap w-full overflow-x-auto pb-2 menu-scroll gap-1">
+          <div className="hidden md:flex flex-nowrap w-full justify-between overflow-x-auto pb-2 menu-scroll gap-2">
   {navItems.map((item) => (
     <Link
       key={item.name}
       href={item.href}
       onClick={() => setIsMenuOpen(false)}
       className={`
-        text-white text-center font-medium rounded-md whitespace-nowrap min-w-[100px]
-        px-2 py-1.5 text-sm
-        hover:bg-[#007a99]
-        ${isActive(item.href) ? "bg-[#007a99] ring-1 ring-white" : ""}
-      `}
+  text-white text-center font-medium rounded-md whitespace-nowrap
+  px-3 py-2 text-sm
+  xl:px-1 xl:py-1 xl:text-[11px]
+  hover:bg-[#007a99]
+  ${isActive(item.href) ? "bg-[#007a99] ring-1 ring-white" : ""}
+`}
     >
       {item.name}
     </Link>
