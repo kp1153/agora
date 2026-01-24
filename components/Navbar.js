@@ -1,9 +1,9 @@
-"use client";
-
+'use client';
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCart } from '@/context/CartContext';
+import Image from 'next/image';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -13,13 +13,14 @@ const Navbar = () => {
 
   const navItems = [
     { name: 'होम', href: '/' },
-    { name: 'सभी पुस्तकें', href: '/books' },
-    { name: 'साहित्य', href: '/books?category=साहित्य' },
-    { name: 'कविता', href: '/books?category=कविता' },
-    { name: 'उपन्यास', href: '/books?category=उपन्यास' },
-    { name: 'कहानी संग्रह', href: '/books?category=कहानी संग्रह' },
-    { name: 'किताब छपवाएं', href: '/publish-with-us' },
+    { name: 'कविता', href: '/portry' },
+    { name: 'कहानी', href: '/story' },
+    { name: 'पत्रकारिता', href: '/journalism' },
+    { name: 'समाज विज्ञान', href: '/social-science' },
+    { name: 'स्त्री अध्ययन', href: '/woman-study' },
+    { name: 'शिक्षा', href: '/education' },
     { name: 'ब्लॉग', href: '/blog' },
+    { name: 'सामाजिक न्याय', href: '/social-justice' },
     { name: 'संपर्क करें', href: '/contact' },
   ];
 
@@ -65,44 +66,45 @@ const Navbar = () => {
   const isActive = (href) => pathname === href;
 
   return (
-    <nav className="bg-rose-500 border-b-2 border-rose-700 shadow-md sticky top-0 z-50">
-   <style dangerouslySetInnerHTML={{__html: `
-  .menu-scroll::-webkit-scrollbar { height: 8px; }
-  .menu-scroll::-webkit-scrollbar-track { background: #e11d48; }
-  .menu-scroll::-webkit-scrollbar-thumb { background: #fb7185; border-radius: 6px; }
-  .menu-scroll::-webkit-scrollbar-thumb:hover { background: #fda4af; }
-`}} />
+    <nav className="bg-[#006680] border-b-2 border-[#004d5c] shadow-md top-0 z-50">
+      <style dangerouslySetInnerHTML={{__html: `
+        .menu-scroll::-webkit-scrollbar { height: 8px; }
+        .menu-scroll::-webkit-scrollbar-track { background: #004d5c; }
+        .menu-scroll::-webkit-scrollbar-thumb { background: #007a99; border-radius: 6px; }
+        .menu-scroll::-webkit-scrollbar-thumb:hover { background: #0099c2; }
+      `}} />
       
       <div className="max-w-7xl mx-auto px-4">
-        <div className="text-center pt-6 pb-2">
+       <div className="text-center pt-0 pb-2">
           <div className="flex items-center justify-between">
             <div className="flex-1"></div>
             
-            <Link href="/" className="flex-1 text-center">
-              <h1 className="text-4xl font-extrabold text-white" style={{ fontFamily: "'Noto Sans Devanagari', sans-serif" }}>
-                अगोरा प्रकाशन
-              </h1>
+            <Link href="/" className="flex-1 flex justify-center">
+              <Image 
+                src="/logo.jpg" 
+                alt="अगोरा प्रकाशन" 
+                width={70} 
+                height={35}
+                className="object-contain"
+              />
             </Link>
             
             <div className="flex-1 flex items-center justify-end gap-4">
-              <button className="text-white hover:text-gray-200">
-                🔍
-              </button>
-              <Link href="/cart" className="relative text-white hover:text-gray-200">
-                🛒
-                {totalItems > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    {totalItems}
-                  </span>
-                )}
-              </Link>
-              <Link href="/auth/login" className="text-white hover:text-gray-200">
-                👤
-              </Link>
-              <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="p-2 rounded-md text-white hover:bg-rose-600 md:hidden"
-              >
+  <Link href="/cart" className="relative text-white hover:text-gray-200 text-2xl">
+  🛒
+  {totalItems > 0 && (
+    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+      {totalItems}
+    </span>
+  )}
+</Link>
+<Link href="/admin/login" className="text-white hover:text-gray-200 text-2xl">
+  👤
+</Link>
+<button
+  onClick={() => setIsMenuOpen(!isMenuOpen)}
+  className="p-2 rounded-md text-white hover:bg-[#007a99] md:hidden"
+>
                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path
                     strokeLinecap="round"
@@ -116,63 +118,38 @@ const Navbar = () => {
           </div>
         </div>
 
-        <div className={`pt-1 pb-2 ${isMenuOpen ? "block" : "hidden"} md:block`}>
+    <div className={`pt-1 pb-2 ${isMenuOpen ? "block" : "hidden"} md:block`}>
           <div className="hidden md:flex flex-nowrap w-full overflow-x-auto pb-2 menu-scroll gap-2">
-            {navItems.map((item) =>
-              item.href ? (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  onClick={() => setIsMenuOpen(false)}
-                  className={`
-                    text-white text-center font-medium rounded-md whitespace-nowrap min-w-[120px]
-                    px-3 py-2 text-sm
-                    hover:bg-rose-600
-                    ${isActive(item.href) ? "bg-rose-600 ring-1 ring-white" : ""}
-                  `}
-                >
-                  {item.name}
-                </Link>
-              ) : (
-                <button
-                  key={item.name}
-                  onClick={() => scrollToSection(item.id)}
-                  className={`
-                    text-white text-center font-medium rounded-md whitespace-nowrap min-w-[120px]
-                    px-3 py-2 text-sm
-                    hover:bg-rose-600
-                    ${activeSection === item.id ? "bg-rose-600 ring-1 ring-yellow-400" : ""}
-                  `}
-                >
-                  {item.name}
-                </button>
-              )
-            )}
+            {navItems.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                onClick={() => setIsMenuOpen(false)}
+                className={`
+                  text-white text-center font-medium rounded-md whitespace-nowrap min-w-[120px]
+                  px-3 py-2 text-sm
+                  hover:bg-[#007a99]
+                  ${isActive(item.href) ? "bg-[#007a99] ring-1 ring-white" : ""}
+                `}
+              >
+                {item.name}
+              </Link>
+            ))}
           </div>
 
           {isMenuOpen && (
             <div className="md:hidden pb-4">
               <div className="grid grid-cols-2 gap-2">
-                {navItems.map((item) =>
-                  item.href ? (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      onClick={() => setIsMenuOpen(false)}
-                      className="px-4 py-2 text-white hover:bg-rose-600 rounded-lg transition-colors text-center"
-                    >
-                      {item.name}
-                    </Link>
-                  ) : (
-                    <button
-                      key={item.name}
-                      onClick={() => scrollToSection(item.id)}
-                      className="px-4 py-2 text-white hover:bg-rose-600 rounded-lg transition-colors text-center"
-                    >
-                      {item.name}
-                    </button>
-                  )
-                )}
+                {navItems.map((item) => (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    onClick={() => setIsMenuOpen(false)}
+                    className="px-4 py-2 text-white hover:bg-[#007a99] rounded-lg transition-colors text-center"
+                  >
+                    {item.name}
+                  </Link>
+                ))}
               </div>
             </div>
           )}
