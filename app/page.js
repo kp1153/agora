@@ -78,7 +78,7 @@ export default function HomePage() {
         </div>
 
         {/* Right Sidebar - Popular Books */}
-        <div className="w-1/6 bg-[#006680] p-2 overflow-y-auto">
+        <div className="w-1/5 bg-[#006680] p-2 overflow-y-auto">
           <h3 className="text-white text-xs font-bold mb-2 text-center">लोकप्रिय</h3>
           <div className="space-y-2">
             {books.filter(b => b.stock > 10).slice(0, 5).map((book) => (
