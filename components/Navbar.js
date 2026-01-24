@@ -22,6 +22,8 @@ const Navbar = () => {
     { name: 'ब्लॉग', href: '/blog' },
     { name: 'सामाजिक न्याय', href: '/social-justice' },
     { name: 'आत्मकथा', href: '/autobiography' },
+    { name: 'लोक साहित्य', href: '/folk-literare' },
+    { name: 'कला', href: '/art' },
     { name: 'संपर्क करें', href: '/contact' },
   ];
 
