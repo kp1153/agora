@@ -7,17 +7,17 @@ export default function HomePage() {
   const [books, setBooks] = useState([]);
 
   const sliderImages = [
-  '/images/1.jpg',
-  '/images/2.jpg',
-  '/images/3.jpg',
-  '/images/4.jpg',
-  '/images/5.jpg',
-  '/images/6.jpg',
-  '/images/7.JPG',  // अगर uppercase में है
-  '/images/8.JPG',
-  '/images/9.JPG',
-  '/images/10.JPG',
-];
+    '/images/1.jpg',
+    '/images/2.jpg',
+    '/images/3.jpg',
+    '/images/4.jpg',
+    '/images/5.jpg',
+    '/images/6.jpg',
+    '/images/7.JPG',
+    '/images/8.JPG',
+    '/images/9.JPG',
+    '/images/10.JPG',
+  ];
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -43,74 +43,97 @@ export default function HomePage() {
   const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % sliderImages.length);
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + sliderImages.length) % sliderImages.length);
 
+  const featuredBooks = books.filter(b => b.featured === true).slice(0, 5);
+  const popularBooks = books.filter(b => b.popular === true).slice(0, 5);
+
   return (
     <div className="w-full">
       
-      {/* Slider with Sidebars - 50% */}
-      <div className="relative w-full h-[50vh] bg-gray-900 overflow-hidden flex">
+      {/* Slider with Sidebars */}
+      <div className="relative w-full h-[65vh] md:h-[75vh] bg-white overflow-hidden flex">
         
         {/* Left Sidebar - Featured Books */}
-        <div className="w-1/5 bg-[#006680] p-2 overflow-y-auto">
-          <h3 className="text-white text-xs font-bold mb-2 text-center">फीचर्ड</h3>
-          <div className="space-y-2">
-            {books.filter(b => b.featured).slice(0, 5).map((book) => (
-              <div key={book.id} className="bg-white rounded overflow-hidden cursor-pointer hover:shadow-lg transition-shadow">
-                <img src={book.cover_image} alt={book.title} className="w-full aspect-[3/4] object-contain" />
-              </div>
-            ))}
+        <div className="hidden md:flex md:flex-col w-[18%] bg-[#006680] p-4 overflow-y-auto">
+          <h3 className="text-white text-base font-bold mb-4 text-center border-b-2 border-white/30 pb-2">फीचर्ड</h3>
+          <div className="space-y-4">
+            {featuredBooks.length > 0 ? (
+              featuredBooks.map((book) => (
+                <div key={book.id} className="bg-white rounded-lg overflow-hidden cursor-pointer hover:shadow-2xl transition-all transform hover:scale-105 shadow-lg">
+                  <img src={book.cover_image} alt={book.title} className="w-full aspect-[3/4] object-cover" />
+                  <div className="p-2 bg-white">
+                    <p className="text-xs font-semibold text-gray-800 line-clamp-1">{book.title}</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-white/70 text-sm text-center mt-8">कोई फीचर्ड किताब नहीं</p>
+            )}
           </div>
         </div>
 
         {/* Center - Main Slider */}
-        <div className="relative w-3/5 h-full">
+        <div className="relative w-full md:w-[64%] h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
           {sliderImages.map((img, index) => (
             <div
               key={index}
-              className={`absolute w-full h-full transition-opacity duration-700 ${
-                index === currentSlide ? 'opacity-100' : 'opacity-0'
+              className={`absolute inset-0 flex items-center justify-center transition-all duration-700 ${
+                index === currentSlide ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
               }`}
             >
-              <img src={img} alt={`Slide ${index + 1}`} className="w-full h-full object-contain" />
+              <div className="w-full h-full flex items-center justify-center p-6">
+                <img 
+                  src={img} 
+                  alt={`Slide ${index + 1}`} 
+                  className="max-w-[90%] max-h-[90%] object-contain drop-shadow-2xl rounded-lg"
+                />
+              </div>
             </div>
           ))}
 
-          <button onClick={prevSlide} className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full text-2xl">←</button>
-          <button onClick={nextSlide} className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full text-2xl">→</button>
+          <button onClick={prevSlide} className="absolute left-3 md:left-6 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-3 md:p-4 rounded-full text-2xl md:text-3xl transition-all shadow-xl hover:shadow-2xl z-10 hover:scale-110">←</button>
+          <button onClick={nextSlide} className="absolute right-3 md:right-6 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-3 md:p-4 rounded-full text-2xl md:text-3xl transition-all shadow-xl hover:shadow-2xl z-10 hover:scale-110">→</button>
 
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
             {sliderImages.map((_, index) => (
               <button
                 key={index}
                 onClick={() => setCurrentSlide(index)}
-                className={`w-3 h-3 rounded-full transition-all ${index === currentSlide ? 'bg-white w-8' : 'bg-white/50'}`}
+                className={`h-2.5 rounded-full transition-all ${index === currentSlide ? 'bg-teal-600 w-10' : 'bg-gray-400 w-2.5 hover:bg-gray-600'}`}
               />
             ))}
           </div>
         </div>
 
         {/* Right Sidebar - Popular Books */}
-        <div className="w-1/5 bg-[#006680] p-2 overflow-y-auto">
-          <h3 className="text-white text-xs font-bold mb-2 text-center">लोकप्रिय</h3>
-          <div className="space-y-2">
-            {books.filter(b => b.stock > 10).slice(0, 5).map((book) => (
-              <div key={book.id} className="bg-white rounded overflow-hidden cursor-pointer hover:shadow-lg transition-shadow">
-                <img src={book.cover_image} alt={book.title} className="w-full aspect-[3/4] object-contain" />
-              </div>
-            ))}
+        <div className="hidden md:flex md:flex-col w-[18%] bg-[#006680] p-4 overflow-y-auto">
+          <h3 className="text-white text-base font-bold mb-4 text-center border-b-2 border-white/30 pb-2">लोकप्रिय</h3>
+          <div className="space-y-4">
+            {popularBooks.length > 0 ? (
+              popularBooks.map((book) => (
+                <div key={book.id} className="bg-white rounded-lg overflow-hidden cursor-pointer hover:shadow-2xl transition-all transform hover:scale-105 shadow-lg">
+                  <img src={book.cover_image} alt={book.title} className="w-full aspect-[3/4] object-cover" />
+                  <div className="p-2 bg-white">
+                    <p className="text-xs font-semibold text-gray-800 line-clamp-1">{book.title}</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-white/70 text-sm text-center mt-8">कोई लोकप्रिय किताब नहीं</p>
+            )}
           </div>
         </div>
       </div>
 
-      {/* All Books Section - 50% */}
-      <div className="h-[50vh] bg-gray-50 p-8 overflow-y-auto mb-0">
+      {/* All Books Section */}
+      <div className="min-h-[50vh] bg-gray-50 p-4 md:p-8 overflow-y-auto">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">सभी पुस्तकें</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">सभी पुस्तकें</h2>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4">
             {books.map((book) => (
               <div key={book.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow">
                 <div className="aspect-[3/4] bg-gray-200">
-                  <img src={book.cover_image} alt={book.title} className="w-full h-full object-contain" />
+                  <img src={book.cover_image} alt={book.title} className="w-full h-full object-cover" />
                 </div>
                 <div className="p-3">
                   <h3 className="font-bold text-sm text-gray-900 mb-1 line-clamp-1">{book.title}</h3>

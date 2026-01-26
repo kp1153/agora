@@ -17,7 +17,8 @@ export default function NewBookPage() {
     isbn: '',
     pages: '',
     stock: 0,
-    featured: false
+    featured: false,
+    popular: false  // नया फील्ड
   });
 
   function handleChange(e) {
@@ -215,7 +216,7 @@ export default function NewBookPage() {
             />
           </div>
 
-          <div className="md:col-span-2">
+          <div className="md:col-span-2 space-y-3">
             <label className="flex items-center gap-3 cursor-pointer">
               <input
                 type="checkbox"
@@ -224,7 +225,18 @@ export default function NewBookPage() {
                 onChange={handleChange}
                 className="w-5 h-5 text-teal-600 border-2 border-gray-300 rounded focus:ring-2 focus:ring-teal-500 cursor-pointer"
               />
-              <span className="text-gray-800 font-semibold">फ़ीचर्ड किताब</span>
+              <span className="text-gray-800 font-semibold">फ़ीचर्ड किताब (बाईं साइड में दिखेगी)</span>
+            </label>
+
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                name="popular"
+                checked={formData.popular}
+                onChange={handleChange}
+                className="w-5 h-5 text-teal-600 border-2 border-gray-300 rounded focus:ring-2 focus:ring-teal-500 cursor-pointer"
+              />
+              <span className="text-gray-800 font-semibold">लोकप्रिय किताब (दाईं साइड में दिखेगी)</span>
             </label>
           </div>
         </div>

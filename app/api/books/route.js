@@ -1,25 +1,25 @@
 import { turso } from '@/lib/db';
 import { NextResponse } from 'next/server';
 
-// सभी किताबें लाने के लिए (GET)
 export async function GET() {
   try {
     const result = await turso.execute('SELECT * FROM books ORDER BY created_at DESC');
     return NextResponse.json(result.rows);
   } catch (error) {
-    console.error('Error fetching books:', error);
+    console.error('GET Error:', error);
     return NextResponse.json({ error: 'किताबें लोड नहीं हो सकीं' }, { status: 500 });
   }
 }
 
-// नई किताब जोड़ने के लिए (POST)
 export async function POST(request) {
   try {
     const data = await request.json();
     
+    console.log('📦 Received data:', JSON.stringify(data, null, 2));
+    
     const result = await turso.execute({
-      sql: `INSERT INTO books (title, author, category, price, description, cover_image, isbn, pages, publisher, published_date, stock, featured) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      sql: `INSERT INTO books (title, author, category, price, description, cover_image, isbn, pages, publisher, published_date, stock, featured, popular) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       args: [
         data.title,
         data.author,
@@ -32,13 +32,16 @@ export async function POST(request) {
         data.publisher || null,
         data.published_date || null,
         data.stock || 0,
-        data.featured || 0
+        data.featured ? 1 : 0,
+        data.popular ? 1 : 0
       ]
     });
 
-    return NextResponse.json({ success: true, id: result.lastInsertRowid }, { status: 201 });
+    console.log('✅ Book added:', result.lastInsertRowid);
+    return NextResponse.json({ success: true, id: Number(result.lastInsertRowid) }, { status: 201 });
   } catch (error) {
-    console.error('Error adding book:', error);
-    return NextResponse.json({ error: 'किताब जोड़ने में समस्या आई' }, { status: 500 });
+    console.error('❌ POST Error:', error.message);
+    console.error('Full error:', error);
+    return NextResponse.json({ error: error.message || 'किताब जोड़ने में समस्या आई' }, { status: 500 });
   }
 }
