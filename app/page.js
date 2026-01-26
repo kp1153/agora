@@ -1,11 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useCart } from '@/context/CartContext';
 
 export default function HomePage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [books, setBooks] = useState([]);
+  const { addToCart } = useCart();
   const [selectedBook, setSelectedBook] = useState(null);
+  const [showToast, setShowToast] = useState(false);
 
   const sliderImages = [
     '/images/1.jpg',
@@ -45,9 +48,19 @@ export default function HomePage() {
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + sliderImages.length) % sliderImages.length);
 
   const featuredBooks = books.filter(b => b.featured === 1 || b.featured === true).slice(0, 5);
-const popularBooks = books.filter(b => b.popular === 1 || b.popular === true).slice(0, 5);
-  return (
-    <div className="w-full">
+  const popularBooks = books.filter(b => b.popular === 1 || b.popular === true).slice(0, 5);
+
+      return (
+  <div className="w-full">
+    
+    {showToast && (
+      <div className="fixed top-20 right-4 bg-green-500 text-white px-6 py-4 rounded-lg shadow-2xl z-50 flex items-center gap-3 animate-bounce">
+        <span className="text-2xl">✓</span>
+        <span className="font-semibold text-lg">कार्ट में जोड़ा गया!</span>
+      </div>
+    )}
+
+   
       
       {/* Book Detail Modal */}
       {selectedBook && (
@@ -88,10 +101,17 @@ const popularBooks = books.filter(b => b.popular === 1 || b.popular === true).sl
                   {selectedBook.pages && (
                     <p className="text-gray-600 mb-4"><span className="font-semibold">पृष्ठ संख्या:</span> {selectedBook.pages}</p>
                   )}
-                  
-                  <button disabled={selectedBook.stock === 0} className="w-full bg-teal-600 hover:bg-teal-700 disabled:bg-gray-400 text-white py-3 rounded-lg text-lg font-semibold mb-6">
-                    🛒 कार्ट में डालें
-                  </button>
+                  <button
+  onClick={() => {
+    addToCart(selectedBook);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
+  }}
+  disabled={selectedBook.stock === 0}
+  className="w-full bg-teal-600 hover:bg-teal-700 disabled:bg-gray-400 text-white py-3 rounded-lg text-lg font-semibold mb-6"
+>
+  🛒 कार्ट में डालें
+</button>
                   
                   {selectedBook.description && (
                     <div className="border-t pt-6">
@@ -201,7 +221,16 @@ const popularBooks = books.filter(b => b.popular === 1 || b.popular === true).sl
                       {book.stock > 0 ? '✓' : '✗'}
                     </span>
                   </div>
-                  <button disabled={book.stock === 0} className="w-full bg-teal-600 hover:bg-teal-700 disabled:bg-gray-400 text-white py-1.5 rounded text-sm font-semibold">
+                  <button 
+                    onClick={(e) => {
+  e.stopPropagation();
+  addToCart(book);
+  setShowToast(true);
+  setTimeout(() => setShowToast(false), 3000);
+}}
+                    disabled={book.stock === 0} 
+                    className="w-full bg-teal-600 hover:bg-teal-700 disabled:bg-gray-400 text-white py-1.5 rounded text-sm font-semibold"
+                  >
                     🛒 कार्ट
                   </button>
                 </div>
