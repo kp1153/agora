@@ -44,9 +44,8 @@ export default function HomePage() {
   const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % sliderImages.length);
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + sliderImages.length) % sliderImages.length);
 
-  const featuredBooks = books.filter(b => b.featured === true).slice(0, 5);
-  const popularBooks = books.filter(b => b.popular === true).slice(0, 5);
-
+  const featuredBooks = books.filter(b => b.featured === 1 || b.featured === true).slice(0, 5);
+const popularBooks = books.filter(b => b.popular === 1 || b.popular === true).slice(0, 5);
   return (
     <div className="w-full">
       
