@@ -11,7 +11,7 @@ export default function HomePage() {
     '/images/2.jpg',
     '/images/3.jpg',
     '/images/4.jpg',
-    '/images/5.jpg',
+    '/images/5.JPG',
     '/images/6.jpg',
     '/images/7.JPG',
     '/images/8.JPG',
