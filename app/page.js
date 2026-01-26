@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 export default function HomePage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [books, setBooks] = useState([]);
+  const [selectedBook, setSelectedBook] = useState(null);
 
   const sliderImages = [
     '/images/1.jpg',
@@ -49,16 +50,73 @@ export default function HomePage() {
   return (
     <div className="w-full">
       
+      {/* Book Detail Modal */}
+      {selectedBook && (
+        <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4" onClick={() => setSelectedBook(null)}>
+          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-gray-900">पुस्तक विवरण</h2>
+              <button onClick={() => setSelectedBook(null)} className="text-3xl text-gray-600 hover:text-gray-900">&times;</button>
+            </div>
+            
+            <div className="p-6 md:p-8">
+              <div className="grid md:grid-cols-2 gap-8">
+                <div>
+                  <img src={selectedBook.cover_image} alt={selectedBook.title} className="w-full rounded-lg shadow-lg" />
+                </div>
+                
+                <div>
+                  <h1 className="text-3xl font-bold text-gray-900 mb-3">{selectedBook.title}</h1>
+                  <p className="text-xl text-gray-600 mb-4">लेखक: {selectedBook.author}</p>
+                  
+                  {selectedBook.category && (
+                    <div className="mb-4">
+                      <span className="inline-block px-4 py-2 bg-teal-100 text-teal-800 rounded-full font-semibold">{selectedBook.category}</span>
+                    </div>
+                  )}
+                  
+                  <div className="mb-6">
+                    <span className="text-4xl font-bold text-teal-600">₹{selectedBook.price}</span>
+                    <span className={`ml-4 px-3 py-1 rounded-full text-sm font-semibold ${selectedBook.stock > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                      {selectedBook.stock > 0 ? `स्टॉक में (${selectedBook.stock})` : 'स्टॉक में नहीं'}
+                    </span>
+                  </div>
+
+                  {selectedBook.isbn && (
+                    <p className="text-gray-600 mb-2"><span className="font-semibold">ISBN:</span> {selectedBook.isbn}</p>
+                  )}
+                  
+                  {selectedBook.pages && (
+                    <p className="text-gray-600 mb-4"><span className="font-semibold">पृष्ठ संख्या:</span> {selectedBook.pages}</p>
+                  )}
+                  
+                  <button disabled={selectedBook.stock === 0} className="w-full bg-teal-600 hover:bg-teal-700 disabled:bg-gray-400 text-white py-3 rounded-lg text-lg font-semibold mb-6">
+                    🛒 कार्ट में डालें
+                  </button>
+                  
+                  {selectedBook.description && (
+                    <div className="border-t pt-6">
+                      <h3 className="text-xl font-bold text-gray-900 mb-3">विवरण</h3>
+                      <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{selectedBook.description}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Slider with Sidebars */}
       <div className="relative w-full h-[65vh] md:h-[75vh] bg-white overflow-hidden flex">
         
         {/* Left Sidebar - Featured Books */}
         <div className="hidden md:flex md:flex-col w-[18%] bg-[#006680] p-4 overflow-y-auto">
-          <h3 className="text-white text-base font-bold mb-4 text-center border-b-2 border-white/30 pb-2">फीचर्ड</h3>
+          <h3 className="text-white text-base font-bold mb-4 text-center border-b-2 border-white/30 pb-2">फ़ीचर्ड</h3>
           <div className="space-y-4">
             {featuredBooks.length > 0 ? (
               featuredBooks.map((book) => (
-                <div key={book.id} className="bg-white rounded-lg overflow-hidden cursor-pointer hover:shadow-2xl transition-all transform hover:scale-105 shadow-lg">
+                <div key={book.id} onClick={() => setSelectedBook(book)} className="bg-white rounded-lg overflow-hidden cursor-pointer hover:shadow-2xl transition-all transform hover:scale-105 shadow-lg">
                   <img src={book.cover_image} alt={book.title} className="w-full aspect-[3/4] object-cover" />
                   <div className="p-2 bg-white">
                     <p className="text-xs font-semibold text-gray-800 line-clamp-1">{book.title}</p>
@@ -66,7 +124,7 @@ export default function HomePage() {
                 </div>
               ))
             ) : (
-              <p className="text-white/70 text-sm text-center mt-8">कोई फीचर्ड किताब नहीं</p>
+              <p className="text-white/70 text-sm text-center mt-8">कोई फ़ीचर्ड किताब नहीं</p>
             )}
           </div>
         </div>
@@ -110,7 +168,7 @@ export default function HomePage() {
           <div className="space-y-4">
             {popularBooks.length > 0 ? (
               popularBooks.map((book) => (
-                <div key={book.id} className="bg-white rounded-lg overflow-hidden cursor-pointer hover:shadow-2xl transition-all transform hover:scale-105 shadow-lg">
+                <div key={book.id} onClick={() => setSelectedBook(book)} className="bg-white rounded-lg overflow-hidden cursor-pointer hover:shadow-2xl transition-all transform hover:scale-105 shadow-lg">
                   <img src={book.cover_image} alt={book.title} className="w-full aspect-[3/4] object-cover" />
                   <div className="p-2 bg-white">
                     <p className="text-xs font-semibold text-gray-800 line-clamp-1">{book.title}</p>
@@ -131,7 +189,7 @@ export default function HomePage() {
           
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4">
             {books.map((book) => (
-              <div key={book.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow">
+              <div key={book.id} onClick={() => setSelectedBook(book)} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow cursor-pointer">
                 <div className="aspect-[3/4] bg-gray-200">
                   <img src={book.cover_image} alt={book.title} className="w-full h-full object-cover" />
                 </div>
