@@ -6,23 +6,22 @@ import { CldUploadWidget } from 'next-cloudinary';
 import dynamic from 'next/dynamic';
 import { use } from 'react';
 
-const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
-import 'react-quill/dist/quill.snow.css';
+const BlockNoteEditor = dynamic(() => import('@/components/BlockNoteEditor'), {
+  ssr: false,
+  loading: () => <div className="p-4 text-center">एडिटर लोड हो रहा है...</div>
+});
 
 export default function EditBlogPage({ params }) {
   const resolvedParams = use(params);
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [content, setContent] = useState('');
   const [formData, setFormData] = useState({
     title: '',
     slug: '',
-    content: '',
-    excerpt: '',
     featured_image: '',
-    category: '',
-    status: 'draft',
-    author_name: ''
+    status: 'draft'
   });
   const [media, setMedia] = useState([]);
 
@@ -37,13 +36,10 @@ export default function EditBlogPage({ params }) {
       setFormData({
         title: data.title,
         slug: data.slug,
-        content: data.content,
-        excerpt: data.excerpt || '',
         featured_image: data.featured_image || '',
-        category: data.category || '',
-        status: data.status,
-        author_name: data.author_name || ''
+        status: data.status
       });
+      setContent(data.content || '');
       setMedia(data.media || []);
     } catch (error) {
       console.error('Error:', error);
@@ -55,10 +51,6 @@ export default function EditBlogPage({ params }) {
   function handleChange(e) {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-  }
-
-  function handleContentChange(value) {
-    setFormData(prev => ({ ...prev, content: value }));
   }
 
   function addMedia(type, url, caption = '') {
@@ -77,7 +69,7 @@ export default function EditBlogPage({ params }) {
       const res = await fetch(`/api/blogs/${resolvedParams.slug}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, media })
+        body: JSON.stringify({ ...formData, content, media })
       });
 
       if (res.ok) {
@@ -93,12 +85,6 @@ export default function EditBlogPage({ params }) {
       setSaving(false);
     }
   }
-
-  const categories = [
-    'कविता', 'कहानी', 'पत्रकारिता', 'समाज विज्ञान', 
-    'स्त्री अध्ययन', 'शिक्षा', 'सामाजिक न्याय', 
-    'आत्मकथा', 'लोक साहित्य', 'कला'
-  ];
 
   if (loading) return <div className="p-6 text-center">लोड हो रहा है...</div>;
 
@@ -130,43 +116,6 @@ export default function EditBlogPage({ params }) {
               onChange={handleChange}
               required
               className="w-full px-4 py-3 text-gray-900 bg-white border-2 border-gray-300 rounded-lg focus:outline-none focus:border-teal-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-800 font-semibold mb-2">कैटेगरी</label>
-            <select
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              className="w-full px-4 py-3 text-gray-900 bg-white border-2 border-gray-300 rounded-lg focus:outline-none focus:border-teal-500"
-            >
-              <option value="">चुनें</option>
-              {categories.map(cat => (
-                <option key={cat} value={cat}>{cat}</option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-gray-800 font-semibold mb-2">लेखक का नाम</label>
-            <input
-              type="text"
-              name="author_name"
-              value={formData.author_name}
-              onChange={handleChange}
-              className="w-full px-4 py-3 text-gray-900 bg-white border-2 border-gray-300 rounded-lg focus:outline-none focus:border-teal-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-800 font-semibold mb-2">संक्षिप्त विवरण</label>
-            <textarea
-              name="excerpt"
-              value={formData.excerpt}
-              onChange={handleChange}
-              rows="2"
-              className="w-full px-4 py-3 text-gray-900 bg-white border-2 border-gray-300 rounded-lg focus:outline-none focus:border-teal-500 resize-none"
             />
           </div>
 
@@ -203,15 +152,10 @@ export default function EditBlogPage({ params }) {
 
           <div>
             <label className="block text-gray-800 font-semibold mb-2">विवरण *</label>
-            <div className="border-2 border-gray-300 rounded-lg overflow-hidden">
-              <ReactQuill
-                theme="snow"
-                value={formData.content}
-                onChange={handleContentChange}
-                className="bg-white"
-                style={{ minHeight: '300px' }}
-              />
-            </div>
+            <BlockNoteEditor 
+              initialContent={content}
+              onChange={setContent} 
+            />
           </div>
 
           <div>
