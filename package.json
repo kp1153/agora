@@ -11,6 +11,9 @@
     "db:init": "node lib/initDb.js"
   },
   "dependencies": {
+    "@blocknote/core": "^0.46.1",
+    "@blocknote/mantine": "^0.46.1",
+    "@blocknote/react": "^0.46.1",
     "@libsql/client": "^0.17.0",
     "dotenv": "^16.4.7",
     "jose": "^6.1.3",
