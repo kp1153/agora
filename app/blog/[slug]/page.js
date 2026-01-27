@@ -35,20 +35,18 @@ export default function BlogDetailPage({ params }) {
   }
 
   function getEmbedUrl(url) {
-    // YouTube
-    if (url.includes('youtube.com') || url.includes('youtu.be')) {
-      const videoId = url.includes('youtu.be') 
-        ? url.split('youtu.be/')[1]?.split('?')[0]
-        : url.split('v=')[1]?.split('&')[0];
-      return `https://www.youtube.com/embed/${videoId}`;
-    }
-    // Vimeo
-    if (url.includes('vimeo.com')) {
-      const videoId = url.split('vimeo.com/')[1]?.split('?')[0];
-      return `https://player.vimeo.com/video/${videoId}`;
-    }
-    return url;
+  if (url.includes('youtube.com') || url.includes('youtu.be')) {
+    const videoId = url.includes('youtu.be') 
+      ? url.split('youtu.be/')[1]?.split('?')[0]
+      : url.split('v=')[1]?.split('&')[0];
+    return `https://www.youtube-nocookie.com/embed/${videoId}?rel=0`;
   }
+  if (url.includes('vimeo.com')) {
+    const videoId = url.split('vimeo.com/')[1]?.split('?')[0];
+    return `https://player.vimeo.com/video/${videoId}`;
+  }
+  return url;
+}
 
   if (loading) {
     return (
@@ -78,16 +76,15 @@ export default function BlogDetailPage({ params }) {
         {/* Blog Content */}
         <article className="bg-white rounded-xl shadow-lg overflow-hidden">
           
-          {/* Featured Image */}
-          {blog.featured_image && (
-            <div className="h-96 overflow-hidden">
-              <img
-                src={blog.featured_image}
-                alt={blog.title}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          )}
+         {blog.featured_image && (
+  <div className="overflow-hidden">
+    <img
+      src={blog.featured_image}
+      alt={blog.title}
+      className="w-full h-auto"
+    />
+  </div>
+)}
 
           <div className="p-8 md:p-12">
             

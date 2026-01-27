@@ -30,32 +30,32 @@ export default function NewBlogPage() {
     }));
 
     if (name === 'title') {
-      const slug = value
-        .toLowerCase()
-        .replace(/[^\u0900-\u097Fa-z0-9\s-]/g, '')
-        .replace(/[\u0900-\u097F]+/g, (match) => {
-          return match.split('').map(char => {
-            const romanMap = {
-              'अ': 'a', 'आ': 'aa', 'इ': 'i', 'ई': 'ee', 'उ': 'u', 'ऊ': 'oo',
-              'ए': 'e', 'ऐ': 'ai', 'ओ': 'o', 'औ': 'au',
-              'क': 'k', 'ख': 'kh', 'ग': 'g', 'घ': 'gh', 'ङ': 'ng',
-              'च': 'ch', 'छ': 'chh', 'ज': 'j', 'झ': 'jh', 'ञ': 'ny',
-              'ट': 't', 'ठ': 'th', 'ड': 'd', 'ढ': 'dh', 'ण': 'n',
-              'त': 't', 'थ': 'th', 'द': 'd', 'ध': 'dh', 'न': 'n',
-              'प': 'p', 'फ': 'ph', 'ब': 'b', 'भ': 'bh', 'म': 'm',
-              'य': 'y', 'र': 'r', 'ल': 'l', 'व': 'v', 'श': 'sh',
-              'ष': 'sh', 'स': 's', 'ह': 'h',
-              'ा': 'a', 'ि': 'i', 'ी': 'ee', 'ु': 'u', 'ू': 'oo',
-              'े': 'e', 'ै': 'ai', 'ो': 'o', 'ौ': 'au', '्': ''
-            };
-            return romanMap[char] || char;
-          }).join('');
-        })
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-')
-        .replace(/^-+|-+$/g, '');
-      setFormData(prev => ({ ...prev, slug }));
-    }
+  const slug = value
+    .split('')
+    .map(char => {
+      const romanMap = {
+        'अ': 'a', 'आ': 'aa', 'इ': 'i', 'ई': 'ee', 'उ': 'u', 'ऊ': 'oo',
+        'ए': 'e', 'ऐ': 'ai', 'ओ': 'o', 'औ': 'au',
+        'क': 'k', 'ख': 'kh', 'ग': 'g', 'घ': 'gh', 'ङ': 'ng',
+        'च': 'ch', 'छ': 'chh', 'ज': 'j', 'झ': 'jh', 'ञ': 'ny',
+        'ट': 't', 'ठ': 'th', 'ड': 'd', 'ढ': 'dh', 'ण': 'n',
+        'त': 't', 'थ': 'th', 'द': 'd', 'ध': 'dh', 'न': 'n',
+        'प': 'p', 'फ': 'ph', 'ब': 'b', 'भ': 'bh', 'म': 'm',
+        'य': 'y', 'र': 'r', 'ल': 'l', 'व': 'v', 'श': 'sh',
+        'ष': 'sh', 'स': 's', 'ह': 'h',
+        'ा': 'a', 'ि': 'i', 'ी': 'ee', 'ु': 'u', 'ू': 'oo',
+        'े': 'e', 'ै': 'ai', 'ो': 'o', 'ौ': 'au', '्': '', 'ं': 'n', 'ः': 'h'
+      };
+      return romanMap[char] || char;
+    })
+    .join('')
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  setFormData(prev => ({ ...prev, slug }));
+}
   }
 
   function addMedia(type, url, caption = '') {

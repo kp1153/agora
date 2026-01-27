@@ -58,7 +58,6 @@ export default function AdminBlogsPage() {
           <thead className="bg-gray-100">
             <tr>
               <th className="px-6 py-3 text-left text-gray-700 font-semibold">शीर्षक</th>
-              <th className="px-6 py-3 text-left text-gray-700 font-semibold">कैटेगरी</th>
               <th className="px-6 py-3 text-left text-gray-700 font-semibold">स्थिति</th>
               <th className="px-6 py-3 text-left text-gray-700 font-semibold">तारीख</th>
               <th className="px-6 py-3 text-right text-gray-700 font-semibold">एक्शन</th>
@@ -68,7 +67,6 @@ export default function AdminBlogsPage() {
             {blogs.map((blog) => (
               <tr key={blog.id} className="border-t hover:bg-gray-50">
                 <td className="px-6 py-4 text-gray-900">{blog.title}</td>
-                <td className="px-6 py-4 text-gray-700">{blog.category || '-'}</td>
                 <td className="px-6 py-4">
                   <span className={`px-3 py-1 rounded-full text-sm ${
                     blog.status === 'published' 
