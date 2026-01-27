@@ -1,20 +1,23 @@
 import Link from 'next/link';
+import { turso } from '@/lib/db';
 
 async function getOrder(orderId) {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/orders/${orderId}`, {
-      cache: 'no-store'
+    const result = await turso.execute({
+      sql: 'SELECT * FROM orders WHERE id = ?',
+      args: [orderId]
     });
-    const data = await res.json();
-    return data; // data.order नहीं, सिर्फ data
+    
+    return result.rows.length > 0 ? result.rows[0] : null;
   } catch (error) {
+    console.error('Error:', error);
     return null;
   }
 }
 
 export default async function OrderSuccessPage({ params }) {
   const resolvedParams = await params;
-  const order = await getOrder(resolvedParams.id);
+  const order = await getOrder(resolvedParams.slug);
 
   if (!order) {
     return (
@@ -43,27 +46,16 @@ export default async function OrderSuccessPage({ params }) {
         <div className="border-t border-b py-6 mb-6">
           <h2 className="text-xl font-semibold mb-4">ग्राहक की जानकारी</h2>
           <div className="space-y-2 text-gray-700">
-            <p><strong>नाम:</strong> {order.customerName}</p>
-            <p><strong>ईमेल:</strong> {order.email}</p>
-            <p><strong>फोन:</strong> {order.phone}</p>
-            <p><strong>पता:</strong> {order.address}, {order.city}, {order.state} - {order.pincode}</p>
+            <p><strong>नाम:</strong> {order.user_name}</p>
+            <p><strong>ईमेल:</strong> {order.user_email}</p>
+            <p><strong>फोन:</strong> {order.user_phone}</p>
           </div>
-        </div>
-
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold mb-4">ऑर्डर की किताबें</h2>
-          {order.items && JSON.parse(order.items).map((item, idx) => (
-            <div key={idx} className="flex justify-between py-2 border-b">
-              <span>{item.title} × {item.quantity}</span>
-              <span className="font-semibold">₹{item.price * item.quantity}</span>
-            </div>
-          ))}
         </div>
 
         <div className="bg-teal-50 p-4 rounded-lg mb-6">
           <div className="flex justify-between text-xl font-bold">
             <span>कुल राशि:</span>
-            <span className="text-teal-600">₹{order.totalAmount}</span>
+            <span className="text-teal-600">₹{order.total_amount}</span>
           </div>
         </div>
 
@@ -72,16 +64,10 @@ export default async function OrderSuccessPage({ params }) {
             हम जल्द ही आपसे संपर्क करेंगे। धन्यवाद!
           </p>
           <div className="flex gap-4 justify-center">
-            <Link
-              href="/"
-              className="bg-teal-600 text-white px-6 py-2 rounded-lg hover:bg-teal-700"
-            >
+            <Link href="/" className="bg-teal-600 text-white px-6 py-2 rounded-lg hover:bg-teal-700">
               होम पर जाएं
             </Link>
-            <Link
-              href="/books"
-              className="border border-teal-600 text-teal-600 px-6 py-2 rounded-lg hover:bg-teal-50"
-            >
+            <Link href="/books" className="border border-teal-600 text-teal-600 px-6 py-2 rounded-lg hover:bg-teal-50">
               खरीदारी जारी रखें
             </Link>
           </div>

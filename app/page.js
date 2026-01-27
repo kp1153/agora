@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useCart } from '@/context/CartContext';
+import ViewsCounter from '@/components/ViewsCounter';
 
 export default function HomePage() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -205,7 +206,9 @@ export default function HomePage() {
       <div className="min-h-[50vh] bg-gray-50 p-4 md:p-8 overflow-y-auto">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">सभी पुस्तकें</h2>
-          
+          <div className="mb-6 flex justify-center">
+  <ViewsCounter slug="homepage" initialViews={0} />
+</div>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4">
             {books.map((book) => (
               <div key={book.id} onClick={() => setSelectedBook(book)} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow cursor-pointer">

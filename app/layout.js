@@ -1,8 +1,9 @@
- import { Inter } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { CartProvider } from "@/context/CartContext";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,6 +16,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="hi">
       <body className={inter.className}>
+        <GoogleAnalytics />
         <CartProvider>
           <Navbar />
           <main className="min-h-screen">

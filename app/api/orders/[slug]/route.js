@@ -1,7 +1,6 @@
 import { turso } from '@/lib/db';
 import { NextResponse } from 'next/server';
 
-// एक ऑर्डर की डिटेल्स लाने के लिए (GET)
 export async function GET(request, context) {
   try {
     const params = await context.params;
@@ -23,7 +22,6 @@ export async function GET(request, context) {
   }
 }
 
-// ऑर्डर अपडेट करने के लिए (PUT)
 export async function PUT(request, context) {
   try {
     const params = await context.params;
@@ -42,7 +40,6 @@ export async function PUT(request, context) {
   }
 }
 
-// ऑर्डर डिलीट करने के लिए (DELETE)
 export async function DELETE(request, context) {
   try {
     const params = await context.params;
