@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useCart } from '@/context/CartContext';
 import { useRouter } from 'next/navigation';
 
@@ -19,40 +19,109 @@ export default function CheckoutPage() {
     pincode: ''
   });
 
+  // Razorpay script load करो
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handlePayment = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const orderData = {
-        ...formData,
-        items: cart,
-        totalAmount: totalPrice,
-        status: 'pending'
-      };
-
-      const res = await fetch('/api/orders', {
+      // Step 1: Razorpay order बनाओ
+      const orderRes = await fetch('/api/razorpay/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(orderData)
+        body: JSON.stringify({ amount: totalPrice })
       });
 
-      const data = await res.json();
+      const orderData = await orderRes.json();
 
-      if (data.success) {
-        clearCart();
-      router.push(`/order-success/${data.orderId}`);
-      } else {
-        alert('ऑर्डर प्लेस नहीं हो पाया। कृपया दोबारा कोशिश करें।');
+      if (!orderData.id) {
+        alert('पेमेंट शुरू नहीं हो सका। दोबारा कोशिश करें।');
+        setLoading(false);
+        return;
       }
+
+      // Step 2: Razorpay checkout खोलो
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: 'आपकी बुक स्टोर',
+        description: 'पुस्तक खरीदी',
+        order_id: orderData.id,
+        handler: async function (response) {
+          // Step 3: Payment verify करो
+          const verifyRes = await fetch('/api/razorpay/verify-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature
+            })
+          });
+
+          const verifyData = await verifyRes.json();
+
+          if (verifyData.success) {
+            // Step 4: Order database में save करो
+            const saveOrderRes = await fetch('/api/orders', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                ...formData,
+                items: cart,
+                totalAmount: totalPrice,
+                status: 'paid',
+                paymentId: response.razorpay_payment_id,
+                orderId: response.razorpay_order_id
+              })
+            });
+
+            const savedOrder = await saveOrderRes.json();
+
+            if (savedOrder.success) {
+              clearCart();
+              router.push(`/order-success/${savedOrder.orderId}`);
+            }
+          } else {
+            alert('पेमेंट वेरिफिकेशन फेल। कृपया सपोर्ट से संपर्क करें।');
+          }
+        },
+        prefill: {
+          name: formData.customerName,
+          email: formData.email,
+          contact: formData.phone
+        },
+        theme: {
+          color: '#0d9488'
+        }
+      };
+
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+      
+      razorpay.on('payment.failed', function (response) {
+        alert('पेमेंट फेल हो गया। दोबारा कोशिश करें।');
+        setLoading(false);
+      });
+
     } catch (error) {
       console.error('Error:', error);
       alert('कुछ गड़बड़ हो गई। दोबारा कोशिश करें।');
-    } finally {
       setLoading(false);
     }
   };
@@ -75,7 +144,7 @@ export default function CheckoutPage() {
       <div className="grid md:grid-cols-2 gap-8">
         <div>
           <h2 className="text-xl font-semibold mb-4">डिलीवरी की जानकारी</h2>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handlePayment} className="space-y-4">
             <input
               type="text"
               name="customerName"
@@ -147,7 +216,7 @@ export default function CheckoutPage() {
               disabled={loading}
               className="w-full bg-teal-600 text-white py-3 rounded-lg hover:bg-teal-700 disabled:bg-gray-400"
             >
-              {loading ? 'प्लेस कर रहे हैं...' : 'ऑर्डर प्लेस करें'}
+              {loading ? 'प्रोसेस हो रहा है...' : 'पेमेंट करें'}
             </button>
           </form>
         </div>
