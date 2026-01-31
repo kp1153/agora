@@ -1,23 +1,56 @@
-import crypto from "crypto";
+import crypto from 'crypto';
+import { NextResponse } from 'next/server';
+import { createClient } from '@libsql/client';
+
+const turso = createClient({
+  url: process.env.TURSO_DATABASE_URL,
+  authToken: process.env.TURSO_AUTH_TOKEN,
+});
 
 export async function POST(req) {
   try {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
-      await req.json();
+    const {
+      razorpay_order_id,
+      razorpay_payment_id,
+      razorpay_signature,
+      customerDetails,
+      items
+    } = await req.json();
 
-    const body = razorpay_order_id + "|" + razorpay_payment_id;
+    const sign = razorpay_order_id + '|' + razorpay_payment_id;
+    const expectedSign = crypto
+      .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+      .update(sign.toString())
+      .digest('hex');
 
-    const expectedSignature = crypto
-      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-      .update(body.toString())
-      .digest("hex");
+    if (razorpay_signature === expectedSign) {
+      const totalAmount = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-    if (expectedSignature === razorpay_signature) {
-      return Response.json({ success: true });
+      const result = await turso.execute({
+        sql: `INSERT INTO orders (customer_name, customer_email, customer_phone, customer_address, total_amount, payment_id, order_id, status, items) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        args: [
+          customerDetails.name,
+          customerDetails.email || '',
+          customerDetails.phone,
+          `${customerDetails.address}, ${customerDetails.city}, ${customerDetails.state} - ${customerDetails.pincode}`,
+          totalAmount,
+          razorpay_payment_id,
+          razorpay_order_id,
+          'completed',
+          JSON.stringify(items)
+        ]
+      });
+
+      return NextResponse.json({
+        success: true,
+        orderId: result.lastInsertRowid,
+        message: 'Payment verified successfully'
+      });
     } else {
-      return Response.json({ success: false }, { status: 400 });
+      return NextResponse.json({ success: false, message: 'Invalid signature' }, { status: 400 });
     }
   } catch (error) {
-    return Response.json({ error: error.message }, { status: 500 });
+    console.error('Payment verification failed:', error);
+    return NextResponse.json({ success: false, error: 'Verification failed' }, { status: 500 });
   }
 }

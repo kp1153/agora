@@ -1,16 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useCart } from '@/context/CartContext';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export default function CheckoutPage() {
-  const { cart, totalPrice, clearCart } = useCart();
+  const { cart, clearCart } = useCart();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  
   const [formData, setFormData] = useState({
-    customerName: '',
+    name: '',
     email: '',
     phone: '',
     address: '',
@@ -19,90 +18,65 @@ export default function CheckoutPage() {
     pincode: ''
   });
 
-  // Razorpay script load करो
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-    script.async = true;
-    document.body.appendChild(script);
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
+  const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handlePayment = async (e) => {
-    e.preventDefault();
+  const handlePayment = async () => {
+    if (!formData.name || !formData.phone || !formData.address) {
+      alert('Please fill all required fields');
+      return;
+    }
+
     setLoading(true);
 
     try {
-      // Step 1: Razorpay order बनाओ
-      const orderRes = await fetch('/api/razorpay/create-order', {
+      const res = await fetch('/api/razorpay/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: totalPrice })
+        body: JSON.stringify({
+          amount: totalPrice,
+          currency: 'INR',
+          customerDetails: formData,
+          items: cart
+        })
       });
 
-      const orderData = await orderRes.json();
+      const data = await res.json();
 
-      if (!orderData.id) {
-        alert('पेमेंट शुरू नहीं हो सका। दोबारा कोशिश करें।');
-        setLoading(false);
-        return;
-      }
-
-      // Step 2: Razorpay checkout खोलो
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-        amount: orderData.amount,
-        currency: orderData.currency,
-        name: 'आपकी बुक स्टोर',
-        description: 'पुस्तक खरीदी',
-        order_id: orderData.id,
+        amount: data.amount,
+        currency: data.currency,
+        name: 'Agora Prakashan',
+        description: 'Book Purchase',
+        order_id: data.id,
         handler: async function (response) {
-          // Step 3: Payment verify करो
           const verifyRes = await fetch('/api/razorpay/verify-payment', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature
+              razorpay_signature: response.razorpay_signature,
+              customerDetails: formData,
+              items: cart
             })
           });
 
-          const verifyData = await verifyRes.json();
+          const result = await verifyRes.json();
 
-          if (verifyData.success) {
-            // Step 4: Order database में save करो
-            const saveOrderRes = await fetch('/api/orders', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                ...formData,
-                items: cart,
-                totalAmount: totalPrice,
-                status: 'paid',
-                paymentId: response.razorpay_payment_id,
-                orderId: response.razorpay_order_id
-              })
-            });
-
-            const savedOrder = await saveOrderRes.json();
-
-            if (savedOrder.success) {
-              clearCart();
-              router.push(`/order-success/${savedOrder.orderId}`);
-            }
+          if (result.success) {
+            clearCart();
+            router.push(`/order-success/${result.orderId}`);
           } else {
-            alert('पेमेंट वेरिफिकेशन फेल। कृपया सपोर्ट से संपर्क करें।');
+            alert('Payment verification failed');
           }
         },
         prefill: {
-          name: formData.customerName,
+          name: formData.name,
           email: formData.email,
           contact: formData.phone
         },
@@ -111,137 +85,101 @@ export default function CheckoutPage() {
         }
       };
 
-      const razorpay = new window.Razorpay(options);
-      razorpay.open();
-      
-      razorpay.on('payment.failed', function (response) {
-        alert('पेमेंट फेल हो गया। दोबारा कोशिश करें।');
-        setLoading(false);
-      });
-
+      const rzp = new window.Razorpay(options);
+      rzp.open();
     } catch (error) {
-      console.error('Error:', error);
-      alert('कुछ गड़बड़ हो गई। दोबारा कोशिश करें।');
+      console.error('Payment error:', error);
+      alert('Payment failed. Please try again.');
+    } finally {
       setLoading(false);
     }
   };
 
   if (cart.length === 0) {
-    return (
-      <div className="container mx-auto px-4 py-16 text-center">
-        <h1 className="text-3xl font-bold mb-4">आपकी कार्ट खाली है</h1>
-        <a href="/books" className="text-teal-600 hover:underline">
-          खरीदारी जारी रखें
-        </a>
-      </div>
-    );
+    router.push('/cart');
+    return null;
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">चेकआउट</h1>
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="container mx-auto px-4">
+        <h1 className="text-4xl font-bold text-gray-800 mb-8">Checkout</h1>
 
-      <div className="grid md:grid-cols-2 gap-8">
-        <div>
-          <h2 className="text-xl font-semibold mb-4">डिलीवरी की जानकारी</h2>
-          <form onSubmit={handlePayment} className="space-y-4">
-            <input
-              type="text"
-              name="customerName"
-              placeholder="पूरा नाम *"
-              required
-              value={formData.customerName}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-lg"
-            />
-            <input
-              type="email"
-              name="email"
-              placeholder="ईमेल *"
-              required
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-lg"
-            />
-            <input
-              type="tel"
-              name="phone"
-              placeholder="फोन नंबर *"
-              required
-              value={formData.phone}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-lg"
-            />
-            <textarea
-              name="address"
-              placeholder="पूरा पता *"
-              required
-              rows="3"
-              value={formData.address}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-lg"
-            />
-            <div className="grid grid-cols-2 gap-4">
-              <input
-                type="text"
-                name="city"
-                placeholder="शहर *"
-                required
-                value={formData.city}
-                onChange={handleChange}
-                className="px-4 py-2 border rounded-lg"
-              />
-              <input
-                type="text"
-                name="state"
-                placeholder="राज्य *"
-                required
-                value={formData.state}
-                onChange={handleChange}
-                className="px-4 py-2 border rounded-lg"
-              />
-            </div>
-            <input
-              type="text"
-              name="pincode"
-              placeholder="पिन कोड *"
-              required
-              value={formData.pincode}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-lg"
-            />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h2 className="text-2xl font-bold text-gray-800 mb-6">Delivery Details</h2>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-teal-600 text-white py-3 rounded-lg hover:bg-teal-700 disabled:bg-gray-400"
-            >
-              {loading ? 'प्रोसेस हो रहा है...' : 'पेमेंट करें'}
-            </button>
-          </form>
-        </div>
-
-        <div>
-          <h2 className="text-xl font-semibold mb-4">ऑर्डर समरी</h2>
-          <div className="bg-gray-50 p-6 rounded-lg">
-            {cart.map((item) => (
-              <div key={item.id} className="flex justify-between mb-3 pb-3 border-b">
+              <div className="space-y-4">
                 <div>
-                  <p className="font-medium">{item.title}</p>
-                  <p className="text-sm text-gray-600">मात्रा: {item.quantity}</p>
+                  <label className="block text-gray-700 font-semibold mb-2">Full Name *</label>
+                  <input type="text" name="name" value={formData.name} onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500" required />
                 </div>
-                <p className="font-semibold">₹{item.price * item.quantity}</p>
+
+                <div>
+                  <label className="block text-gray-700 font-semibold mb-2">Email</label>
+                  <input type="email" name="email" value={formData.email} onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500" />
+                </div>
+
+                <div>
+                  <label className="block text-gray-700 font-semibold mb-2">Phone Number *</label>
+                  <input type="tel" name="phone" value={formData.phone} onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500" required />
+                </div>
+
+                <div>
+                  <label className="block text-gray-700 font-semibold mb-2">Address *</label>
+                  <textarea name="address" value={formData.address} onChange={handleChange} rows="3" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500" required></textarea>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-gray-700 font-semibold mb-2">City</label>
+                    <input type="text" name="city" value={formData.city} onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500" />
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-700 font-semibold mb-2">State</label>
+                    <input type="text" name="state" value={formData.state} onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500" />
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-700 font-semibold mb-2">Pincode</label>
+                    <input type="text" name="pincode" value={formData.pincode} onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500" />
+                  </div>
+                </div>
               </div>
-            ))}
-            <div className="mt-4 pt-4 border-t-2 border-gray-300">
-              <div className="flex justify-between text-xl font-bold">
-                <span>कुल राशि:</span>
-                <span>₹{totalPrice}</span>
+            </div>
+          </div>
+
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
+              <h2 className="text-2xl font-bold text-gray-800 mb-6">Order Summary</h2>
+
+              <div className="space-y-4 mb-6">
+                {cart.map((item) => (
+                  <div key={item.id} className="flex justify-between text-sm">
+                    <span className="text-gray-600">{item.title} x {item.quantity}</span>
+                    <span className="font-semibold">₹{(item.price * item.quantity).toFixed(2)}</span>
+                  </div>
+                ))}
+
+                <div className="border-t pt-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-xl font-bold text-gray-800">Total Amount</span>
+                    <span className="text-2xl font-bold text-teal-600">₹{totalPrice.toFixed(2)}</span>
+                  </div>
+                </div>
               </div>
+
+              <button onClick={handlePayment} disabled={loading} className="w-full bg-teal-600 hover:bg-teal-700 text-white px-6 py-4 rounded-lg font-semibold text-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                {loading ? 'Processing...' : 'Pay Now'}
+              </button>
             </div>
           </div>
         </div>
       </div>
+
+      <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     </div>
   );
 }
