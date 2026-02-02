@@ -53,6 +53,12 @@ export default function CheckoutPage() {
         name: 'Agora Prakashan',
         description: 'Book Purchase',
         order_id: data.id,
+        method: {
+          netbanking: true,
+          card: true,
+          upi: true,
+          wallet: true
+        },
         handler: async function (response) {
           const verifyRes = await fetch('/api/razorpay/verify-payment', {
             method: 'POST',
