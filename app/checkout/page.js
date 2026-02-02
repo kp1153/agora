@@ -37,7 +37,7 @@ export default function CheckoutPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          amount: totalPrice,
+          amount: totalPrice * 100,
           currency: 'INR',
           customerDetails: formData,
           items: cart
