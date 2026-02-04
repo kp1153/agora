@@ -27,17 +27,17 @@ export async function POST(req) {
       const totalAmount = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
       const result = await turso.execute({
-        sql: `INSERT INTO orders (customer_name, customer_email, customer_phone, customer_address, total_amount, payment_id, order_id, status, items) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        sql: `INSERT INTO orders (user_name, user_email, user_phone, shipping_address, city, state, pincode, total_amount, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         args: [
           customerDetails.name,
           customerDetails.email || '',
           customerDetails.phone,
-          `${customerDetails.address}, ${customerDetails.city}, ${customerDetails.state} - ${customerDetails.pincode}`,
+          customerDetails.address,
+          customerDetails.city || '',
+          customerDetails.state || '',
+          customerDetails.pincode || '',
           totalAmount,
-          razorpay_payment_id,
-          razorpay_order_id,
-          'completed',
-          JSON.stringify(items)
+          'completed'
         ]
       });
 

@@ -1,9 +1,22 @@
 import { turso } from '@/lib/db';
 import { NextResponse } from 'next/server';
 
-export async function GET() {
+export async function GET(request) {
   try {
-    const result = await turso.execute('SELECT * FROM books ORDER BY created_at DESC');
+    const url = new URL(request.url);
+    const category = url.searchParams.get('category');
+    
+    let result;
+    
+    if (category) {
+      result = await turso.execute({
+        sql: 'SELECT * FROM books WHERE category = ? ORDER BY created_at DESC',
+        args: [category]
+      });
+    } else {
+      result = await turso.execute('SELECT * FROM books ORDER BY created_at DESC');
+    }
+    
     return NextResponse.json(result.rows);
   } catch (error) {
     console.error('GET Error:', error);

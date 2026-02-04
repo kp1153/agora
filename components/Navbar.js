@@ -13,7 +13,7 @@ const Navbar = () => {
 
   const navItems = [
     { name: 'होम', href: '/' },
-    { name: 'कविता', href: '/portry' },
+    { name: 'कविता', href: '/kavita' },
     { name: 'कहानी', href: '/story' },
     { name: 'पत्रकारिता', href: '/journalism' },
     { name: 'समाज विज्ञान', href: '/social-science' },
