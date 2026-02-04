@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import { NextResponse } from 'next/server';
 import { createClient } from '@libsql/client';
+import { sendOrderEmail } from '@/lib/email';
 
 const turso = createClient({
   url: process.env.TURSO_DATABASE_URL,
@@ -39,6 +40,13 @@ export async function POST(req) {
           totalAmount,
           'completed'
         ]
+      });
+
+      await sendOrderEmail({
+        customerDetails,
+        items,
+        totalAmount,
+        orderId: result.lastInsertRowid
       });
 
       return NextResponse.json({
